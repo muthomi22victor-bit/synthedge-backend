@@ -1,0 +1,65 @@
+{
+  "users": [
+    {
+      "id": "1782149712540",
+      "username": "testuser",
+      "email": "test@email.com",
+      "password": "$2a$10$/CD9HKGDSCrj.sqy/CKmAuX.Te38hSjT/UfTwevKJ3nzUGvD72A7.",
+      "rank": "Junior Trader",
+      "createdAt": "2026-06-22T17:35:12.540Z"
+    },
+    {
+      "id": "1782149754210",
+      "username": "DELETED",
+      "email": "muthomi22victor@gmail.com",
+      "password": "$2a$10$C79h0/b0BFXIpAKs77Y7medsQt699VNVhz2JauQK0wrLlHR0xgtbK",
+      "rank": "Junior Trader",
+      "createdAt": "2026-06-22T17:35:54.210Z"
+    }
+  ],
+  "balances": [
+    {
+      "userId": "1782149712540",
+      "balance": 10000,
+      "equity": 10200,
+      "drawdown": 2.5,
+      "profit": 200,
+      "challenge": "10000"
+    },
+    {
+      "userId": "1782149754210",
+      "balance": 25000,
+      "equity": 25211.84,
+      "drawdown": 4.51,
+      "profit": 211.84,
+      "challenge": "25000",
+      "target": 27000
+    }
+  ],
+  "achievements": [],
+  "payouts": [],
+  "leaderboard": [
+    {
+      "userId": "1782149712540",
+      "username": "testuser",
+      "profit": 0,
+      "rank": 1
+    },
+    {
+      "userId": "1782149754210",
+      "username": "DELETED",
+      "profit": 0,
+      "rank": 2
+    }
+  ],
+  "journal": [
+    {
+      "id": "1782150262280",
+      "userId": "1782149754210",
+      "entry": "juhhjn",
+      "outcome": "pending",
+      "date": "2026-06-22"
+    }
+  ],
+  "certificates": []
+}
