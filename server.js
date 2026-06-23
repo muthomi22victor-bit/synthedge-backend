@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // ============ SIMPLE JSON DATABASE ============
 const DB_FILE = path.join(__dirname, 'db.json');
@@ -20,7 +20,9 @@ if (!fs.existsSync(DB_FILE)) {
         payouts: [],
         leaderboard: [],
         journal: [],
-        certificates: []
+        certificates: [],
+        trades: [],
+        positions: []
     };
     fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
 }
@@ -68,29 +70,23 @@ app.get('/api/test', (req, res) => {
 // ============ REGISTER ============
 app.post('/api/register', async (req, res) => {
     console.log('📝 Registration request received');
-    console.log('Body:', req.body);
     
     try {
         const { username, email, password } = req.body;
         
-        // Validate input
         if (!username || !email || !password) {
             return res.status(400).json({ error: 'All fields are required' });
         }
         
-        // Read database
         const db = readDB();
         
-        // Check if user exists
         const existingUser = db.users.find(u => u.username === username);
         if (existingUser) {
             return res.status(400).json({ error: 'Username already exists' });
         }
         
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         
-        // Create user
         const newUser = {
             id: Date.now().toString(),
             username,
@@ -101,18 +97,18 @@ app.post('/api/register', async (req, res) => {
         };
         
         db.users.push(newUser);
-        
-        // Create default balance
         db.balances.push({
             userId: newUser.id,
             balance: 10000,
-            equity: 10200,
-            drawdown: 2.5,
-            profit: 200,
-            challenge: '10000'
+            equity: 10000,
+            drawdown: 0,
+            profit: 0,
+            challenge: '10000',
+            peakEquity: 10000,
+            totalTrades: 0,
+            winningTrades: 0,
+            totalPayouts: 0
         });
-        
-        // Add to leaderboard
         db.leaderboard.push({
             userId: newUser.id,
             username: newUser.username,
@@ -120,7 +116,16 @@ app.post('/api/register', async (req, res) => {
             rank: db.leaderboard.length + 1
         });
         
-        // Save to database
+        // Add welcome payout
+        db.payouts.push({
+            id: Date.now().toString(),
+            userId: newUser.id,
+            amount: 100,
+            date: new Date().toISOString().split('T')[0],
+            status: 'Completed',
+            description: '🎉 Welcome bonus!'
+        });
+        
         writeDB(db);
         
         console.log('✅ User created:', username);
@@ -182,19 +187,13 @@ app.get('/api/me', authenticateToken, (req, res) => {
         const db = readDB();
         const user = db.users.find(u => u.id === req.user.id);
         if (!user) return res.status(404).json({ error: 'User not found' });
-        
-        res.json({
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            rank: user.rank
-        });
+        res.json(user);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ GET BALANCE ============
+// ============ BALANCE ROUTES ============
 app.get('/api/balance', authenticateToken, (req, res) => {
     try {
         const db = readDB();
@@ -206,14 +205,23 @@ app.get('/api/balance', authenticateToken, (req, res) => {
     }
 });
 
-// ============ UPDATE BALANCE ============
 app.put('/api/balance', authenticateToken, (req, res) => {
     try {
         const db = readDB();
-        const { balance, equity, drawdown, profit } = req.body;
+        const { balance, equity, drawdown, profit, peakEquity, totalTrades, winningTrades, totalPayouts } = req.body;
         const index = db.balances.findIndex(b => b.userId === req.user.id);
         if (index !== -1) {
-            db.balances[index] = { ...db.balances[index], balance, equity, drawdown, profit };
+            db.balances[index] = { 
+                ...db.balances[index], 
+                balance: balance || db.balances[index].balance,
+                equity: equity || db.balances[index].equity,
+                drawdown: drawdown || db.balances[index].drawdown,
+                profit: profit || db.balances[index].profit,
+                peakEquity: peakEquity || db.balances[index].peakEquity,
+                totalTrades: totalTrades || db.balances[index].totalTrades,
+                winningTrades: winningTrades || db.balances[index].winningTrades,
+                totalPayouts: totalPayouts || db.balances[index].totalPayouts
+            };
             writeDB(db);
         }
         res.json({ message: 'Balance updated' });
@@ -222,157 +230,281 @@ app.put('/api/balance', authenticateToken, (req, res) => {
     }
 });
 
-// ============ GET ACHIEVEMENTS ============
-app.get('/api/achievements', authenticateToken, (req, res) => {
+// ============ TRADES ROUTES ============
+app.get('/api/trades', authenticateToken, (req, res) => {
     try {
         const db = readDB();
-        const achievements = db.achievements.filter(a => a.userId === req.user.id);
-        res.json(achievements);
+        const trades = db.trades ? db.trades.filter(t => t.userId === req.user.id) : [];
+        res.json(trades);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ ADD ACHIEVEMENT ============
-app.post('/api/achievements', authenticateToken, (req, res) => {
+app.post('/api/trades', authenticateToken, (req, res) => {
     try {
         const db = readDB();
-        const { name } = req.body;
-        const achievement = {
+        const { type, amount, entry, exit, profit, status, currentPrice } = req.body;
+        
+        const trade = {
             id: Date.now().toString(),
             userId: req.user.id,
-            name,
-            earnedAt: new Date().toISOString()
+            type,
+            amount,
+            entry: entry || 0,
+            exit: exit || null,
+            profit: profit || 0,
+            currentPrice: currentPrice || entry || 0,
+            status: status || 'open',
+            timestamp: new Date().toISOString()
         };
-        db.achievements.push(achievement);
+        
+        if (!db.trades) db.trades = [];
+        db.trades.push(trade);
         writeDB(db);
-        res.json(achievement);
+        
+        res.json({ message: 'Trade saved', trade });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ GET PAYOUTS ============
+app.put('/api/trades/:id', authenticateToken, (req, res) => {
+    try {
+        const db = readDB();
+        const { id } = req.params;
+        const { exit, profit, status } = req.body;
+        
+        const index = db.trades.findIndex(t => t.id === id && t.userId === req.user.id);
+        if (index === -1) {
+            return res.status(404).json({ error: 'Trade not found' });
+        }
+        
+        db.trades[index].exit = exit || db.trades[index].exit;
+        db.trades[index].profit = profit || db.trades[index].profit;
+        db.trades[index].status = status || 'closed';
+        writeDB(db);
+        
+        res.json({ message: 'Trade closed', trade: db.trades[index] });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============ POSITIONS ROUTES ============
+app.get('/api/positions', authenticateToken, (req, res) => {
+    try {
+        const db = readDB();
+        const positions = db.positions ? db.positions.filter(p => p.userId === req.user.id && p.status === 'open') : [];
+        res.json(positions);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/positions', authenticateToken, (req, res) => {
+    try {
+        const db = readDB();
+        const { type, amount, entry, currentPrice } = req.body;
+        
+        const position = {
+            id: Date.now().toString(),
+            userId: req.user.id,
+            type,
+            amount,
+            entry: entry || 0,
+            currentPrice: currentPrice || entry || 0,
+            profit: 0,
+            status: 'open',
+            timestamp: new Date().toISOString()
+        };
+        
+        if (!db.positions) db.positions = [];
+        db.positions.push(position);
+        writeDB(db);
+        
+        res.json({ message: 'Position opened', position });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/positions/:id', authenticateToken, (req, res) => {
+    try {
+        const db = readDB();
+        const { id } = req.params;
+        
+        db.positions = db.positions.filter(p => p.id !== id || p.userId !== req.user.id);
+        writeDB(db);
+        
+        res.json({ message: 'Position closed' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============ PAYOUTS ROUTES ============
 app.get('/api/payouts', authenticateToken, (req, res) => {
     try {
         const db = readDB();
-        const payouts = db.payouts.filter(p => p.userId === req.user.id);
+        const payouts = db.payouts ? db.payouts.filter(p => p.userId === req.user.id) : [];
         res.json(payouts);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ ADD PAYOUT ============
 app.post('/api/payouts', authenticateToken, (req, res) => {
     try {
         const db = readDB();
-        const { amount, date, status } = req.body;
+        const { amount, date, status, description } = req.body;
+        
         const payout = {
             id: Date.now().toString(),
             userId: req.user.id,
-            amount,
+            amount: amount || 0,
             date: date || new Date().toISOString().split('T')[0],
-            status: status || 'Pending'
+            status: status || 'Pending',
+            description: description || 'Trading profit payout'
         };
+        
+        if (!db.payouts) db.payouts = [];
         db.payouts.push(payout);
         writeDB(db);
-        res.json(payout);
+        
+        res.json({ message: 'Payout recorded', payout });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ GET JOURNAL ============
+// ============ ACHIEVEMENTS ROUTES ============
+app.get('/api/achievements', authenticateToken, (req, res) => {
+    try {
+        const db = readDB();
+        const achievements = db.achievements ? db.achievements.filter(a => a.userId === req.user.id) : [];
+        res.json(achievements);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/achievements', authenticateToken, (req, res) => {
+    try {
+        const db = readDB();
+        const { name } = req.body;
+        
+        const achievement = {
+            id: Date.now().toString(),
+            userId: req.user.id,
+            name: name || 'New Achievement',
+            earnedAt: new Date().toISOString()
+        };
+        
+        if (!db.achievements) db.achievements = [];
+        db.achievements.push(achievement);
+        writeDB(db);
+        
+        res.json({ message: 'Achievement earned', achievement });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============ JOURNAL ROUTES ============
 app.get('/api/journal', authenticateToken, (req, res) => {
     try {
         const db = readDB();
-        const entries = db.journal.filter(j => j.userId === req.user.id);
-        res.json(entries);
+        const journal = db.journal ? db.journal.filter(j => j.userId === req.user.id) : [];
+        res.json(journal);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ ADD JOURNAL ENTRY ============
 app.post('/api/journal', authenticateToken, (req, res) => {
     try {
         const db = readDB();
         const { entry, outcome, date } = req.body;
+        
         const journalEntry = {
             id: Date.now().toString(),
             userId: req.user.id,
-            entry,
+            entry: entry || 'Journal entry',
             outcome: outcome || 'pending',
             date: date || new Date().toISOString().split('T')[0]
         };
+        
+        if (!db.journal) db.journal = [];
         db.journal.push(journalEntry);
         writeDB(db);
-        res.json(journalEntry);
+        
+        res.json({ message: 'Journal entry added', journalEntry });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ GET CERTIFICATES ============
+// ============ CERTIFICATES ROUTES ============
 app.get('/api/certificates', authenticateToken, (req, res) => {
     try {
         const db = readDB();
-        const certs = db.certificates.filter(c => c.userId === req.user.id);
+        const certs = db.certificates ? db.certificates.filter(c => c.userId === req.user.id) : [];
         res.json(certs);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ ADD CERTIFICATE ============
 app.post('/api/certificates', authenticateToken, (req, res) => {
     try {
         const db = readDB();
         const { name } = req.body;
+        
         const cert = {
             id: Date.now().toString(),
             userId: req.user.id,
-            name,
+            name: name || 'New Certificate',
             earnedAt: new Date().toISOString()
         };
+        
+        if (!db.certificates) db.certificates = [];
         db.certificates.push(cert);
         writeDB(db);
-        res.json(cert);
+        
+        res.json({ message: 'Certificate earned', cert });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ GET LEADERBOARD ============
+// ============ LEADERBOARD ROUTES ============
 app.get('/api/leaderboard', (req, res) => {
     try {
         const db = readDB();
-        const leaderboard = [...db.leaderboard].sort((a, b) => b.profit - a.profit);
+        const leaderboard = db.leaderboard ? [...db.leaderboard].sort((a, b) => b.profit - a.profit) : [];
         res.json(leaderboard);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ============ UPDATE LEADERBOARD ============
 app.post('/api/leaderboard', authenticateToken, (req, res) => {
     try {
         const db = readDB();
         const { profit } = req.body;
-        const existing = db.leaderboard.find(l => l.userId === req.user.id);
         
+        const existing = db.leaderboard.find(l => l.userId === req.user.id);
         if (existing) {
-            existing.profit = profit;
+            existing.profit = profit || 0;
         } else {
             db.leaderboard.push({
                 userId: req.user.id,
                 username: req.user.username,
-                profit
+                profit: profit || 0
             });
         }
         
-        // Recalculate ranks
         const sorted = [...db.leaderboard].sort((a, b) => b.profit - a.profit);
         sorted.forEach((entry, index) => {
             entry.rank = index + 1;
@@ -385,11 +517,12 @@ app.post('/api/leaderboard', authenticateToken, (req, res) => {
     }
 });
 
-// ============ START CHALLENGE ============
+// ============ CHALLENGE ROUTE ============
 app.post('/api/challenge/start', authenticateToken, (req, res) => {
     try {
         const db = readDB();
         const { amount } = req.body;
+        
         const challenges = {
             '10000': { balance: 10000, target: 10800 },
             '25000': { balance: 25000, target: 27000 },
@@ -411,14 +544,57 @@ app.post('/api/challenge/start', authenticateToken, (req, res) => {
                 drawdown: 0,
                 profit: 0,
                 challenge: amount,
-                target: challenge.target
+                peakEquity: challenge.balance,
+                totalTrades: 0,
+                winningTrades: 0,
+                totalPayouts: 0
             };
+            // Clear old positions and trades
+            db.positions = db.positions.filter(p => p.userId !== req.user.id);
+            db.trades = db.trades.filter(t => t.userId !== req.user.id);
             writeDB(db);
         }
         
         res.json({ 
             message: `Challenge ${amount} started!`,
             challenge: { amount, ...challenge }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============ DASHBOARD ROUTE ============
+app.get('/api/dashboard', authenticateToken, (req, res) => {
+    try {
+        const db = readDB();
+        const userId = req.user.id;
+        
+        const balance = db.balances.find(b => b.userId === userId) || { balance: 10000, equity: 10000, profit: 0 };
+        const trades = db.trades ? db.trades.filter(t => t.userId === userId) : [];
+        const payouts = db.payouts ? db.payouts.filter(p => p.userId === userId) : [];
+        const achievements = db.achievements ? db.achievements.filter(a => a.userId === userId) : [];
+        const journal = db.journal ? db.journal.filter(j => j.userId === userId) : [];
+        const certificates = db.certificates ? db.certificates.filter(c => c.userId === userId) : [];
+        const positions = db.positions ? db.positions.filter(p => p.userId === userId && p.status === 'open') : [];
+        
+        const totalTrades = trades.length;
+        const winningTrades = trades.filter(t => t.profit > 0).length;
+        const totalPayouts = payouts.reduce((sum, p) => sum + (p.status === 'Completed' ? p.amount : 0), 0);
+        const winRate = totalTrades > 0 ? Math.round((winningTrades / totalTrades) * 100) : 0;
+        
+        res.json({
+            balance,
+            trades,
+            payouts,
+            achievements,
+            journal,
+            certificates,
+            positions,
+            totalTrades,
+            winningTrades,
+            totalPayouts,
+            winRate
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
