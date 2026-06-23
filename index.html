@@ -2,34 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SynthEdge Funding - Prop Firm</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- TradingView Lightweight Charts -->
     <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js">
     </script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
             height: 100%;
             overflow-y: auto;
             background: #0b1120;
             font-family: 'Inter', system-ui, sans-serif;
         }
-        
+
         .glass {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(56, 189, 248, 0.15);
         }
-        
+
         .glass-light {
             background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(4px);
             border: 1px solid rgba(56, 189, 248, 0.1);
         }
-        
+
         .ticker {
             background: #0f172a;
             border-bottom: 1px solid #1e293b;
@@ -38,23 +43,53 @@
             display: flex;
             align-items: center;
         }
-        
+
         @keyframes slide {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
+            0% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
         }
-        
+
         .ticker-scroll {
             display: flex;
             white-space: nowrap;
             animation: slide 25s linear infinite;
             width: fit-content;
         }
-        .ticker-scroll:hover { animation-play-state: paused; }
-        
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .pulse-dot { animation: pulse 2s infinite; }
-        
+        .ticker-scroll:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .notification-slide {
+            animation: slideIn 0.5s ease-out;
+        }
+
         input {
             background: #1a2332 !important;
             color: #ffffff !important;
@@ -65,13 +100,16 @@
             font-size: 16px !important;
             transition: all 0.3s ease !important;
         }
-        input::placeholder { color: #9ca3af !important; opacity: 1 !important; }
+        input::placeholder {
+            color: #9ca3af !important;
+            opacity: 1 !important;
+        }
         input:focus {
             border-color: #22d3ee !important;
             box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2) !important;
             outline: none !important;
         }
-        
+
         .password-toggle {
             position: absolute;
             right: 12px;
@@ -83,18 +121,33 @@
             cursor: pointer;
             z-index: 10;
         }
-        .password-toggle:hover { color: #22d3ee; }
-        .password-wrapper { position: relative; width: 100%; }
-        
-        #page-content { min-height: 80vh; padding-bottom: 40px; }
-        
-        .custom-checkbox { accent-color: #22d3ee; width: 16px; height: 16px; cursor: pointer; }
-        .number-update { transition: all 0.3s ease; }
-        
+        .password-toggle:hover {
+            color: #22d3ee;
+        }
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        #page-content {
+            min-height: 80vh;
+            padding-bottom: 40px;
+        }
+
+        .custom-checkbox {
+            accent-color: #22d3ee;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .number-update {
+            transition: all 0.3s ease;
+        }
+
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             overflow: hidden;
             margin-top: 8px;
@@ -104,7 +157,7 @@
             border-radius: 4px;
             transition: width 1s ease;
         }
-        
+
         .stat-card {
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid rgba(56, 189, 248, 0.08);
@@ -112,91 +165,244 @@
             padding: 12px;
             text-align: center;
         }
-        .stat-card .stat-value { font-size: 20px; font-weight: bold; color: white; }
-        .stat-card .stat-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
-        
+        .stat-card .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+        .stat-card .stat-label {
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .trade-btn-buy {
             background: #22c55e;
             color: white;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             font-weight: bold;
             border: none;
             cursor: pointer;
             width: 100%;
             transition: all 0.2s;
+            font-size: 16px;
         }
-        .trade-btn-buy:hover { background: #16a34a; transform: scale(1.02); }
+        .trade-btn-buy:hover {
+            background: #16a34a;
+            transform: scale(1.02);
+        }
         .trade-btn-sell {
             background: #ef4444;
             color: white;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             font-weight: bold;
             border: none;
             cursor: pointer;
             width: 100%;
             transition: all 0.2s;
+            font-size: 16px;
         }
-        .trade-btn-sell:hover { background: #dc2626; transform: scale(1.02); }
-        
+        .trade-btn-sell:hover {
+            background: #dc2626;
+            transform: scale(1.02);
+        }
+
         .position-row {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 4px;
         }
-        
+
         #chart-container {
             width: 100%;
-            height: 400px;
+            height: 350px;
             background: #0b1120;
             border-radius: 12px;
             overflow: hidden;
         }
-        
+
+        /* Payout Styles */
+        .payout-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .payout-badge {
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .payout-badge.completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .payout-badge.pending {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+        .payout-badge.failed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Notification Dot */
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
         @media (max-width: 768px) {
-            #nav-links { flex-wrap: wrap; justify-content: center; gap: 4px; }
-            #nav-links a { font-size: 12px; padding: 4px 8px; }
-            #chart-container { height: 250px; }
+            #nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+            }
+            #nav-links a {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+            #chart-container {
+                height: 220px;
+            }
+            .stat-card .stat-value {
+                font-size: 15px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .trade-btn-buy,
+            .trade-btn-sell {
+                font-size: 14px;
+                padding: 10px;
+            }
+            .position-row {
+                font-size: 12px;
+            }
+            .ticker-scroll {
+                font-size: 10px;
+            }
+            .text-lg {
+                font-size: 1rem !important;
+            }
+            .text-2xl {
+                font-size: 1.25rem !important;
+            }
+            .glass.p-4 {
+                padding: 12px !important;
+            }
+            .glass.p-6 {
+                padding: 16px !important;
+            }
+            #page-content {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            .grid-cols-4 {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 4px;
+            }
+            .grid-cols-4 .glass {
+                padding: 6px;
+            }
+            .grid-cols-4 .text-sm {
+                font-size: 10px;
+            }
+            .payout-item {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #chart-container {
+                height: 180px;
+            }
+            .stat-card {
+                padding: 8px;
+            }
+            .stat-card .stat-value {
+                font-size: 13px;
+            }
+            .stat-card .stat-label {
+                font-size: 8px;
+            }
+            .position-row {
+                font-size: 11px;
+            }
+            #nav-links a {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+        }
+
+        body {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        #page-content {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+        .max-w-7xl {
+            max-width: 100%;
         }
     </style>
 </head>
 <body>
 
-    <nav class="glass border-b border-cyan/20 px-4 py-3 sticky top-0 z-50">
+    <nav class="glass border-b border-cyan/20 px-3 py-2 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between">
             <div class="flex items-center space-x-2">
-                <i class="fas fa-wave-square text-cyan-400 text-2xl"></i>
-                <span class="text-white font-bold text-xl">SynthEdge <span class="text-cyan-400">Funding</span></span>
+                <i class="fas fa-wave-square text-cyan-400 text-xl md:text-2xl"></i>
+                <span class="text-white font-bold text-base md:text-xl">SynthEdge <span class="text-cyan-400">Funding</span></span>
             </div>
-            <div class="flex items-center space-x-4 text-sm md:text-base" id="nav-links">
-                <a href="javascript:void(0)" onclick="navigate('home')" class="text-gray-300 hover:text-cyan-400 transition px-2 py-1">Home</a>
-                <a href="javascript:void(0)" onclick="navigate('dashboard')" class="text-gray-300 hover:text-cyan-400 transition px-2 py-1">Dashboard</a>
-                <a href="javascript:void(0)" onclick="navigate('trading')" class="text-cyan-400 font-bold transition px-2 py-1">Trading</a>
-                <a href="javascript:void(0)" onclick="navigate('challenges')" class="text-gray-300 hover:text-cyan-400 transition px-2 py-1">Challenges</a>
-                <a href="javascript:void(0)" onclick="navigate('payouts')" class="text-gray-300 hover:text-cyan-400 transition px-2 py-1">Payouts</a>
-                <a href="javascript:void(0)" onclick="navigate('leaderboard')" class="text-gray-300 hover:text-cyan-400 transition px-2 py-1">Leaderboard</a>
-                <a href="javascript:void(0)" onclick="navigate('journal')" class="text-gray-300 hover:text-cyan-400 transition px-2 py-1">Journal</a>
+            <div class="flex items-center space-x-2 md:space-x-4 text-xs md:text-sm" id="nav-links">
+                <a href="javascript:void(0)" onclick="navigate('home')" class="text-gray-300 hover:text-cyan-400 transition px-1 md:px-2 py-1">Home</a>
+                <a href="javascript:void(0)" onclick="navigate('dashboard')" class="text-gray-300 hover:text-cyan-400 transition px-1 md:px-2 py-1">Dashboard</a>
+                <a href="javascript:void(0)" onclick="navigate('trading')" class="text-cyan-400 font-bold transition px-1 md:px-2 py-1">Trading</a>
+                <a href="javascript:void(0)" onclick="navigate('challenges')" class="text-gray-300 hover:text-cyan-400 transition px-1 md:px-2 py-1">Challenges</a>
+                <a href="javascript:void(0)" onclick="navigate('payouts')" class="text-gray-300 hover:text-cyan-400 transition px-1 md:px-2 py-1">Payouts</a>
+                <a href="javascript:void(0)" onclick="navigate('leaderboard')" class="text-gray-300 hover:text-cyan-400 transition px-1 md:px-2 py-1">Leaderboard</a>
+                <a href="javascript:void(0)" onclick="navigate('journal')" class="text-gray-300 hover:text-cyan-400 transition px-1 md:px-2 py-1">Journal</a>
                 <span id="nav-auth"></span>
             </div>
         </div>
     </nav>
 
-    <div class="ticker py-1.5 px-4 overflow-hidden whitespace-nowrap text-xs text-gray-400">
+    <div class="ticker py-1 px-2 md:px-4 overflow-hidden whitespace-nowrap text-xs text-gray-400">
         <div class="ticker-scroll" id="tickerContent"></div>
     </div>
 
-    <main id="page-content" class="max-w-7xl mx-auto px-4 py-6"></main>
+    <main id="page-content" class="max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-6"></main>
 
-    <footer class="glass border-t border-cyan/10 mt-8 py-6 px-4 text-center text-gray-400 text-sm">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div class="flex items-center space-x-4">
+    <footer class="glass border-t border-cyan/10 mt-8 py-4 md:py-6 px-3 md:px-4 text-center text-gray-400 text-xs md:text-sm">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-4 flex-wrap justify-center">
                 <i class="fas fa-phone-alt text-cyan-400"></i><span>0741 748 180</span>
                 <i class="fas fa-map-pin text-cyan-400 ml-2"></i><span>Nairobi, Kenya</span>
             </div>
-            <div class="flex space-x-6 mt-2 md:mt-0">
+            <div class="flex space-x-6">
                 <span class="text-cyan-300">© 2026 SynthEdge Funding</span>
             </div>
         </div>
@@ -211,6 +417,8 @@
         let chart = null;
         let candlestickSeries = null;
         let chartData = [];
+        let lastCandleTime = 0;
+        let payoutNotifications = [];
 
         let accountData = {
             balance: 10000,
@@ -298,14 +506,14 @@
             const authNav = document.getElementById('nav-auth');
             if (currentUser) {
                 authNav.innerHTML = `
-                    <span class="text-cyan-300 text-sm"><i class="fas fa-user-circle"></i> ${currentUser.username}</span>
-                    <button onclick="logoutUser()" class="text-red-400/70 hover:text-red-300 text-sm border border-red-500/30 px-2 py-0.5 rounded-full">Logout</button>
-                `;
+                        <span class="text-cyan-300 text-xs md:text-sm"><i class="fas fa-user-circle"></i> ${currentUser.username}</span>
+                        <button onclick="logoutUser()" class="text-red-400/70 hover:text-red-300 text-xs border border-red-500/30 px-2 py-0.5 rounded-full">Logout</button>
+                    `;
             } else {
                 authNav.innerHTML = `
-                    <a href="javascript:void(0)" onclick="navigate('login')" class="bg-cyan-600/20 text-cyan-300 px-3 py-1 rounded-full border border-cyan-500/30 text-sm hover:bg-cyan-600/40 transition">Login</a>
-                    <a href="javascript:void(0)" onclick="navigate('register')" class="bg-blue-600/30 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 text-sm hover:bg-blue-600/40 transition">Register</a>
-                `;
+                        <a href="javascript:void(0)" onclick="navigate('login')" class="bg-cyan-600/20 text-cyan-300 px-2 md:px-3 py-1 rounded-full border border-cyan-500/30 text-xs hover:bg-cyan-600/40 transition">Login</a>
+                        <a href="javascript:void(0)" onclick="navigate('register')" class="bg-blue-600/30 text-blue-300 px-2 md:px-3 py-1 rounded-full border border-blue-500/30 text-xs hover:bg-blue-600/40 transition">Register</a>
+                    `;
             }
         }
 
@@ -325,7 +533,7 @@
             const data = [];
             let price = currentPrice;
             const now = new Date();
-            
+
             for (let i = count; i > 0; i--) {
                 const time = new Date(now.getTime() - i * 3000);
                 const open = price;
@@ -333,7 +541,7 @@
                 const close = parseFloat((price + change).toFixed(4));
                 const high = Math.max(open, close) + (Math.random() * 0.001);
                 const low = Math.min(open, close) - (Math.random() * 0.001);
-                
+
                 data.push({
                     time: Math.floor(time.getTime() / 1000),
                     open: open,
@@ -347,51 +555,79 @@
             return data;
         }
 
-        function updateChart() {
+        // ============ LIVE CHART UPDATE ============
+        function updateChartWithNewCandle() {
             if (!chart || !candlestickSeries) return;
-            
+
+            const now = Math.floor(Date.now() / 1000);
+            if (now - lastCandleTime < 2) return;
+            lastCandleTime = now;
+
+            const lastCandle = chartData.length > 0 ? chartData[chartData.length - 1] : null;
+            const open = lastCandle ? lastCandle.close : currentPrice;
+            const change = (Math.random() - 0.5) * 0.002;
+            const close = parseFloat((open + change).toFixed(4));
+            const high = Math.max(open, close) + (Math.random() * 0.0015);
+            const low = Math.min(open, close) - (Math.random() * 0.0015);
+
             const newCandle = {
-                time: Math.floor(Date.now() / 1000),
-                open: currentPrice,
-                high: currentPrice + (Math.random() * 0.001),
-                low: currentPrice - (Math.random() * 0.001),
-                close: currentPrice + (Math.random() - 0.5) * 0.002
+                time: now,
+                open: parseFloat(open.toFixed(4)),
+                high: parseFloat(high.toFixed(4)),
+                low: parseFloat(low.toFixed(4)),
+                close: parseFloat(close.toFixed(4))
             };
-            newCandle.high = Math.max(newCandle.open, newCandle.close, newCandle.high);
-            newCandle.low = Math.min(newCandle.open, newCandle.close, newCandle.low);
-            newCandle.close = parseFloat(newCandle.close.toFixed(4));
-            newCandle.open = parseFloat(newCandle.open.toFixed(4));
-            
+
             chartData.push(newCandle);
             if (chartData.length > 200) chartData.shift();
+
             candlestickSeries.setData(chartData);
+            chart.timeScale().fitContent();
+            chart.timeScale().scrollToRealTime();
         }
 
         // ============ TRADING SIMULATION ============
         function updateTradingAccount() {
-            const marketMove = (Math.random() - 0.5) * 2.5;
+            const marketMove = (Math.random() - 0.5) * 3.0;
             currentPrice = currentPrice * (1 + marketMove / 10000);
             currentPrice = parseFloat(currentPrice.toFixed(4));
-            
-            // Update open positions
+
+            updateChartWithNewCandle();
+
+            const priceDisplay = document.getElementById('currentPriceDisplay');
+            const changeDisplay = document.getElementById('priceChangeDisplay');
+            if (priceDisplay) {
+                priceDisplay.textContent = currentPrice;
+                priceDisplay.className =
+                    `text-base md:text-lg ml-2 ${currentPrice > 1.0874 ? 'text-green-400' : 'text-red-400'}`;
+            }
+            if (changeDisplay) {
+                const changePercent = ((currentPrice - 1.0874) / 1.0874 * 100).toFixed(2);
+                changeDisplay.textContent = `${currentPrice > 1.0874 ? '▲' : '▼'} ${changePercent}%`;
+                changeDisplay.className =
+                `text-xs ml-2 ${currentPrice > 1.0874 ? 'text-green-400' : 'text-red-400'}`;
+            }
+
+            let totalPositionsProfit = 0;
             accountData.positions.forEach(pos => {
                 const priceDiff = pos.type === 'buy' ? currentPrice - pos.entry : pos.entry - currentPrice;
                 pos.profit = parseFloat((priceDiff * pos.amount * 1000).toFixed(2));
                 pos.currentPrice = currentPrice;
+                totalPositionsProfit += pos.profit;
             });
-            
-            const totalPositionsProfit = accountData.positions.reduce((sum, p) => sum + p.profit, 0);
-            
+
+            const oldEquity = accountData.equity;
             accountData.equity = parseFloat((accountData.balance + totalPositionsProfit).toFixed(2));
             accountData.profit = parseFloat((accountData.equity - accountData.balance).toFixed(2));
-            
+
             if (accountData.equity > accountData.peakEquity) {
                 accountData.peakEquity = accountData.equity;
             }
-            accountData.drawdown = accountData.peakEquity > 0 ?
-                parseFloat(((accountData.peakEquity - accountData.equity) / accountData.peakEquity * 100).toFixed(2)) : 0;
-            
-            // Auto-payout at 8%
+            if (accountData.peakEquity > 0) {
+                accountData.drawdown = parseFloat(((accountData.peakEquity - accountData.equity) / accountData
+                .peakEquity * 100).toFixed(2));
+            }
+
             const profitTarget = accountData.balance * 0.08;
             if (accountData.profit >= profitTarget && accountData.balance > 0) {
                 const payoutAmount = Math.round(accountData.profit * 0.8);
@@ -403,37 +639,82 @@
                     accountData.peakEquity = accountData.balance;
                 }
             }
-            
+
             updateDashboardDisplay();
-            updateChart();
             saveAccountData();
         }
 
+        // ============ AUTO PAYOUT WITH NOTIFICATION ============
         async function autoPayout(amount) {
             try {
+                const payoutData = {
+                    amount: amount,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'Completed',
+                    transactionId: 'PAY-' + Date.now().toString().slice(-8),
+                    description: 'Trading profit payout (8% target reached)'
+                };
+
                 await apiCall('/payouts', {
                     method: 'POST',
-                    body: JSON.stringify({ amount, date: new Date().toISOString().split('T')[0], status: 'Completed' })
+                    body: JSON.stringify(payoutData)
                 });
                 accountData.totalPayouts += amount;
-                showNotification(`🎉 Payout of $${amount.toLocaleString()} processed!`);
+
+                // Show beautiful payout notification
+                showPayoutNotification(payoutData);
+
+                // Also show regular notification
+                showNotification(
+                    `🎉 Payout of $${amount.toLocaleString()} processed! Transaction: ${payoutData.transactionId}`);
             } catch (error) { console.error('Payout error:', error); }
         }
 
-        function showNotification(message) {
+        // ============ PAYOUT NOTIFICATION ============
+        function showPayoutNotification(payout) {
             const notification = document.createElement('div');
-            notification.className = 'fixed top-20 right-4 glass p-4 rounded-xl border border-cyan-500/30 z-50 max-w-sm';
+            notification.className =
+                'fixed top-20 right-4 glass p-4 md:p-5 rounded-xl border border-green-500/30 z-50 max-w-xs md:max-w-sm notification-slide';
             notification.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-bell text-cyan-400 text-xl"></i>
-                    <span class="text-white text-sm">${message}</span>
-                </div>
-            `;
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-green-500/20 p-2 rounded-full">
+                            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm">💰 Payout Processed!</h4>
+                            <p class="text-green-400 text-sm font-bold">$${payout.amount.toLocaleString()}</p>
+                            <p class="text-gray-400 text-xs">Transaction: ${payout.transactionId}</p>
+                            <p class="text-gray-500 text-xs mt-1">${payout.description}</p>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="payout-badge completed">Completed</span>
+                                <span class="text-gray-500 text-xs">${payout.date}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
             document.body.appendChild(notification);
             setTimeout(() => {
                 notification.style.opacity = '0';
                 notification.style.transition = 'opacity 0.5s';
-                setTimeout(() => notification.remove(), 500);
+                setTimeout(() => notification.remove(), 7000);
+            }, 7000);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className =
+                'fixed top-20 right-4 glass p-3 md:p-4 rounded-xl border border-cyan-500/30 z-50 max-w-xs md:max-w-sm notification-slide';
+            notification.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-bell text-cyan-400 text-lg md:text-xl"></i>
+                        <span class="text-white text-xs md:text-sm">${message}</span>
+                    </div>
+                `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 5000);
             }, 5000);
         }
 
@@ -445,50 +726,50 @@
             const profitTargetEl = document.getElementById('profitTargetProgress');
             const winRateEl = document.getElementById('winRate');
             const positionsEl = document.getElementById('openPositions');
-            
+
             if (balanceEl) balanceEl.textContent = `$${accountData.balance.toLocaleString()}`;
             if (equityEl) {
                 equityEl.textContent = `$${accountData.equity.toLocaleString()}`;
                 const color = accountData.equity >= accountData.balance ? 'text-green-400' : 'text-red-400';
-                equityEl.className = `text-2xl font-bold ${color} number-update`;
+                equityEl.className = `text-xl md:text-2xl font-bold ${color} number-update`;
             }
             if (drawdownEl) {
                 drawdownEl.textContent = `${accountData.drawdown}%`;
                 const color = accountData.drawdown > 5 ? 'text-red-400' : 'text-cyan-400';
-                drawdownEl.className = `text-2xl font-bold ${color} number-update`;
+                drawdownEl.className = `text-xl md:text-2xl font-bold ${color} number-update`;
             }
             if (profitEl) {
                 profitEl.textContent = `$${accountData.profit.toLocaleString()}`;
                 const color = accountData.profit >= 0 ? 'text-green-400' : 'text-red-400';
-                profitEl.className = `text-2xl font-bold ${color} number-update`;
+                profitEl.className = `text-xl md:text-2xl font-bold ${color} number-update`;
             }
-            
+
             if (profitTargetEl) {
                 const target = accountData.balance * 0.08;
                 const progress = Math.min((accountData.profit / target) * 100, 100);
                 profitTargetEl.style.width = `${progress}%`;
                 profitTargetEl.textContent = `${Math.round(progress)}%`;
             }
-            
+
             if (winRateEl) {
                 const winRate = accountData.totalTrades > 0 ?
                     Math.round((accountData.winningTrades / accountData.totalTrades) * 100) : 0;
                 winRateEl.textContent = `${winRate}%`;
             }
-            
+
             if (positionsEl) {
                 if (accountData.positions.length === 0) {
-                    positionsEl.innerHTML = '<div class="text-gray-500 text-sm py-2">No open positions</div>';
+                    positionsEl.innerHTML = '<div class="text-gray-500 text-xs md:text-sm py-2">No open positions</div>';
                 } else {
                     positionsEl.innerHTML = accountData.positions.map(p => `
-                        <div class="position-row">
-                            <span class="${p.type === 'buy' ? 'text-green-400' : 'text-red-400'}">${p.type.toUpperCase()}</span>
-                            <span>$${p.amount}</span>
-                            <span>${p.entry}</span>
-                            <span class="${p.profit >= 0 ? 'text-green-400' : 'text-red-400'}">$${p.profit.toFixed(2)}</span>
-                            <button onclick="closePosition('${p.id}')" class="text-red-400 hover:text-red-300 text-xs">Close</button>
-                        </div>
-                    `).join('');
+                            <div class="position-row">
+                                <span class="${p.type === 'buy' ? 'text-green-400' : 'text-red-400'}">${p.type.toUpperCase()}</span>
+                                <span>$${p.amount}</span>
+                                <span>${p.entry}</span>
+                                <span class="${p.profit >= 0 ? 'text-green-400' : 'text-red-400'}">$${p.profit.toFixed(2)}</span>
+                                <button onclick="closePosition('${p.id}')" class="text-red-400 hover:text-red-300 text-xs">Close</button>
+                            </div>
+                        `).join('');
                 }
             }
         }
@@ -513,13 +794,13 @@
                 alert('Please login first');
                 return;
             }
-            
+
             const amount = parseFloat(document.getElementById('tradeAmount')?.value || 100);
             if (amount <= 0 || amount > accountData.balance) {
                 alert('Invalid trade amount');
                 return;
             }
-            
+
             const trade = {
                 id: Date.now().toString(),
                 type: type,
@@ -527,38 +808,81 @@
                 entry: currentPrice,
                 profit: 0,
                 currentPrice: currentPrice,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                status: 'open'
             };
-            
+
             accountData.positions.push(trade);
             accountData.totalTrades++;
+
+            // Save to backend
+            saveTradeToBackend(trade);
+
             showNotification(`📊 ${type.toUpperCase()} ${amount} @ ${currentPrice}`);
             updateDashboardDisplay();
             saveAccountData();
         }
 
+        async function saveTradeToBackend(trade) {
+            try {
+                await apiCall('/trades', {
+                    method: 'POST',
+                    body: JSON.stringify(trade)
+                });
+                console.log('✅ Trade saved to backend');
+            } catch (error) {
+                console.error('❌ Error saving trade:', error);
+            }
+        }
+
         async function closePosition(id) {
             const pos = accountData.positions.find(p => p.id === id);
             if (!pos) return;
-            
+
             const profit = pos.profit;
+            const oldBalance = accountData.balance;
             accountData.balance = parseFloat((accountData.balance + profit).toFixed(2));
             accountData.equity = accountData.balance;
             accountData.profit = parseFloat((accountData.equity - accountData.balance).toFixed(2));
             if (profit > 0) accountData.winningTrades++;
-            
-            // Save to trade history
-            accountData.tradeHistory.push({
-                ...pos,
-                closePrice: currentPrice,
-                profit: profit,
-                closedAt: new Date().toISOString()
-            });
-            
+
+            // Update trade in backend
+            try {
+                await apiCall(`/trades/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        exit: currentPrice,
+                        profit: profit,
+                        status: 'closed'
+                    })
+                });
+                console.log('✅ Trade closed in backend');
+            } catch (error) {
+                console.error('❌ Error closing trade:', error);
+            }
+
             accountData.positions = accountData.positions.filter(p => p.id !== id);
             showNotification(`✅ Position closed! ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)}`);
             updateDashboardDisplay();
             saveAccountData();
+
+            // Update leaderboard
+            updateLeaderboard();
+        }
+
+        async function updateLeaderboard() {
+            try {
+                await apiCall('/leaderboard', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        profit: accountData.profit,
+                        username: currentUser.username
+                    })
+                });
+                console.log('✅ Leaderboard updated!');
+            } catch (error) {
+                console.error('❌ Error updating leaderboard:', error);
+            }
         }
 
         function renderTicker() {
@@ -571,12 +895,12 @@
                     const color = direction === 'up' ? 'text-green-400' : 'text-red-400';
                     const icon = direction === 'up' ? 'fa-arrow-up' : 'fa-arrow-down';
                     html += `
-                        <span class="mx-4" data-pair="${item.pair}">
-                            <span class="${color}">${item.pair}</span>
-                            ${item.price.toLocaleString()} 
-                            <i class="fas ${icon} ${color} ml-1"></i>
-                        </span>
-                    `;
+                            <span class="mx-2 md:mx-4" data-pair="${item.pair}">
+                                <span class="${color}">${item.pair}</span>
+                                ${item.price.toLocaleString()} 
+                                <i class="fas ${icon} ${color} ml-1"></i>
+                            </span>
+                        `;
                 });
             }
             tickerContainer.innerHTML = html;
@@ -585,134 +909,161 @@
         // ============ PAGE RENDERERS ============
         async function renderHome() {
             return `
-                <div class="grid md:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight">Trade with <span class="text-cyan-400">SynthEdge</span></h1>
-                        <p class="text-gray-300 text-lg mt-4">Proprietary trading funding up to $100,000. Zero risk, real simulation.</p>
-                        <div class="flex flex-wrap gap-4 mt-6">
-                            <a href="javascript:void(0)" onclick="navigate('trading')" class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-cyan-600/30">Start Trading</a>
-                            <a href="javascript:void(0)" onclick="navigate('challenges')" class="glass-light text-cyan-300 border border-cyan-500/30 px-6 py-3 rounded-xl hover:bg-cyan-900/20">View Challenges</a>
+                    <div class="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+                        <div>
+                            <h1 class="text-3xl md:text-6xl font-extrabold text-white leading-tight">Trade with <span class="text-cyan-400">SynthEdge</span></h1>
+                            <p class="text-gray-300 text-base md:text-lg mt-2 md:mt-4">Proprietary trading funding up to $100,000. Zero risk, real simulation.</p>
+                            <div class="flex flex-wrap gap-3 md:gap-4 mt-4 md:mt-6">
+                                <a href="javascript:void(0)" onclick="navigate('trading')" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium shadow-lg shadow-cyan-600/30 text-sm md:text-base">Start Trading</a>
+                                <a href="javascript:void(0)" onclick="navigate('challenges')" class="glass-light text-cyan-300 border border-cyan-500/30 px-4 md:px-6 py-2 md:py-3 rounded-xl hover:bg-cyan-900/20 text-sm md:text-base">View Challenges</a>
+                            </div>
+                            <div class="mt-6 md:mt-8 grid grid-cols-4 gap-1 md:gap-2 text-center">
+                                <div class="glass p-1 md:p-2 rounded-lg"><span class="text-cyan-400 text-xs md:text-sm">$10k</span></div>
+                                <div class="glass p-1 md:p-2 rounded-lg"><span class="text-cyan-400 text-xs md:text-sm">$25k</span></div>
+                                <div class="glass p-1 md:p-2 rounded-lg"><span class="text-cyan-400 text-xs md:text-sm">$50k</span></div>
+                                <div class="glass p-1 md:p-2 rounded-lg"><span class="text-cyan-400 text-xs md:text-sm">$100k</span></div>
+                            </div>
                         </div>
-                        <div class="mt-8 grid grid-cols-4 gap-2 text-center">
-                            <div class="glass p-2 rounded-lg"><span class="text-cyan-400 text-sm">$10k</span></div>
-                            <div class="glass p-2 rounded-lg"><span class="text-cyan-400 text-sm">$25k</span></div>
-                            <div class="glass p-2 rounded-lg"><span class="text-cyan-400 text-sm">$50k</span></div>
-                            <div class="glass p-2 rounded-lg"><span class="text-cyan-400 text-sm">$100k</span></div>
+                        <div class="glass p-4 md:p-6 rounded-2xl">
+                            <h2 class="text-lg md:text-xl font-bold text-white">📊 Live Market</h2>
+                            <div class="grid grid-cols-2 gap-2 md:gap-3 text-gray-300 mt-3 md:mt-4">
+                                <div class="bg-navy/60 p-2 md:p-3 rounded-lg text-xs md:text-sm home-market-item" data-home-pair="BTC"><span class="text-green-400">BTC</span> 67,852 <i class="fas fa-arrow-up text-green-400"></i></div>
+                                <div class="bg-navy/60 p-2 md:p-3 rounded-lg text-xs md:text-sm home-market-item" data-home-pair="ETH"><span class="text-green-400">ETH</span> 3,521 <i class="fas fa-arrow-up text-green-400"></i></div>
+                                <div class="bg-navy/60 p-2 md:p-3 rounded-lg text-xs md:text-sm home-market-item" data-home-pair="SPX"><span class="text-red-400">SPX</span> 5,234 <i class="fas fa-arrow-down text-red-400"></i></div>
+                                <div class="bg-navy/60 p-2 md:p-3 rounded-lg text-xs md:text-sm home-market-item" data-home-pair="SYNTH"><span class="text-cyan-400">SYNTH</span> 1,245 <i class="fas fa-arrow-up text-cyan-400"></i></div>
+                            </div>
+                            ${currentUser ? `<div class="bg-cyan-900/20 p-2 md:p-3 rounded-lg text-cyan-300 text-xs md:text-sm mt-3 md:mt-4">👋 Welcome back, ${currentUser.username}</div>` : '<div class="bg-cyan-900/20 p-2 md:p-3 rounded-lg text-cyan-300 text-xs md:text-sm mt-3 md:mt-4">🔐 Login to start trading</div>'}
                         </div>
                     </div>
-                    <div class="glass p-6 rounded-2xl">
-                        <h2 class="text-xl font-bold text-white">📊 Live Market</h2>
-                        <div class="grid grid-cols-2 gap-3 text-gray-300 mt-4">
-                            <div class="bg-navy/60 p-3 rounded-lg home-market-item" data-home-pair="BTC"><span class="text-green-400">BTC</span> 67,852 <i class="fas fa-arrow-up text-green-400"></i></div>
-                            <div class="bg-navy/60 p-3 rounded-lg home-market-item" data-home-pair="ETH"><span class="text-green-400">ETH</span> 3,521 <i class="fas fa-arrow-up text-green-400"></i></div>
-                            <div class="bg-navy/60 p-3 rounded-lg home-market-item" data-home-pair="SPX"><span class="text-red-400">SPX</span> 5,234 <i class="fas fa-arrow-down text-red-400"></i></div>
-                            <div class="bg-navy/60 p-3 rounded-lg home-market-item" data-home-pair="SYNTH"><span class="text-cyan-400">SYNTH</span> 1,245 <i class="fas fa-arrow-up text-cyan-400"></i></div>
-                        </div>
-                        ${currentUser ? `<div class="bg-cyan-900/20 p-3 rounded-lg text-cyan-300 text-sm mt-4">👋 Welcome back, ${currentUser.username}</div>` : '<div class="bg-cyan-900/20 p-3 rounded-lg text-cyan-300 text-sm mt-4">🔐 Login to start trading</div>'}
-                    </div>
-                </div>
-            `;
+                `;
         }
 
         async function renderTrading() {
             if (!currentUser) {
-                return `<div class="glass p-8 rounded-2xl text-center text-gray-300">Please <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 underline">login</a> to trade</div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-gray-300 text-sm md:text-base">Please <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 underline">login</a> to trade</div>`;
             }
 
-            // Initialize chart data
-            chartData = generateCandleData(100);
-            
+            if (chartData.length === 0) {
+                chartData = generateCandleData(100);
+            }
+
             setTimeout(() => {
                 initChart();
-            }, 100);
+                if (tradingInterval) {
+                    clearInterval(tradingInterval);
+                }
+                tradingInterval = setInterval(() => {
+                    updateTradingAccount();
+                }, 2000);
+            }, 300);
 
             return `
-                <div class="grid lg:grid-cols-3 gap-6">
-                    <!-- Chart -->
-                    <div class="lg:col-span-2 glass p-4 rounded-xl">
-                        <div class="flex justify-between items-center mb-3">
-                            <div>
-                                <span class="text-white font-bold text-lg">EUR/USD</span>
-                                <span class="text-${currentPrice > 1.0874 ? 'green' : 'red'}-400 text-lg ml-2">${currentPrice}</span>
-                                <span class="text-xs text-gray-500 ml-2">${currentPrice > 1.0874 ? '▲' : '▼'} ${((currentPrice - 1.0874) / 1.0874 * 100).toFixed(2)}%</span>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                        <!-- Chart -->
+                        <div class="lg:col-span-2 glass p-3 md:p-4 rounded-xl">
+                            <div class="flex flex-wrap justify-between items-center mb-2 md:mb-3 gap-2">
+                                <div>
+                                    <span class="text-white font-bold text-sm md:text-lg">EUR/USD</span>
+                                    <span id="currentPriceDisplay" class="text-base md:text-lg ml-2 ${currentPrice > 1.0874 ? 'text-green-400' : 'text-red-400'}">${currentPrice}</span>
+                                    <span id="priceChangeDisplay" class="text-xs ml-2 ${currentPrice > 1.0874 ? 'text-green-400' : 'text-red-400'}">${currentPrice > 1.0874 ? '▲' : '▼'} ${((currentPrice - 1.0874) / 1.0874 * 100).toFixed(2)}%</span>
+                                </div>
+                                <div class="flex space-x-2 md:space-x-4 text-xs text-gray-400">
+                                    <span>H: ${(currentPrice * 1.002).toFixed(4)}</span>
+                                    <span>L: ${(currentPrice * 0.998).toFixed(4)}</span>
+                                </div>
                             </div>
-                            <div class="flex space-x-4 text-xs text-gray-400">
-                                <span>H: ${(currentPrice * 1.002).toFixed(4)}</span>
-                                <span>L: ${(currentPrice * 0.998).toFixed(4)}</span>
-                            </div>
+                            <div id="chart-container"></div>
                         </div>
-                        <div id="chart-container"></div>
-                    </div>
 
-                    <!-- Trading Panel -->
-                    <div class="glass p-4 rounded-xl">
-                        <h3 class="text-white font-bold text-lg mb-4">📊 Trade</h3>
-                        
-                        <div class="space-y-3">
-                            <div>
-                                <label class="text-gray-400 text-sm">Amount</label>
-                                <input type="number" id="tradeAmount" value="100" class="w-full bg-navy/60 border border-cyan-500/30 p-2 rounded text-white">
-                            </div>
+                        <!-- Trading Panel -->
+                        <div class="glass p-3 md:p-4 rounded-xl">
+                            <h3 class="text-white font-bold text-base md:text-lg mb-3 md:mb-4">📊 Trade</h3>
                             
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="placeTrade('buy')" class="trade-btn-buy">BUY</button>
-                                <button onclick="placeTrade('sell')" class="trade-btn-sell">SELL</button>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-gray-400 text-xs md:text-sm">Amount</label>
+                                    <input type="number" id="tradeAmount" value="100" class="w-full bg-navy/60 border border-cyan-500/30 p-2 md:p-3 rounded text-white text-sm md:text-base">
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="placeTrade('buy')" class="trade-btn-buy">BUY</button>
+                                    <button onclick="placeTrade('sell')" class="trade-btn-sell">SELL</button>
+                                </div>
+                                
+                                <div class="border-t border-cyan-500/10 pt-3 mt-3">
+                                    <div class="flex justify-between text-xs md:text-sm">
+                                        <span class="text-gray-400">Balance</span>
+                                        <span class="text-white" id="tradeBalance">$${accountData.balance.toLocaleString()}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs md:text-sm">
+                                        <span class="text-gray-400">Equity</span>
+                                        <span class="text-green-400" id="tradeEquity">$${accountData.equity.toLocaleString()}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs md:text-sm">
+                                        <span class="text-gray-400">Profit</span>
+                                        <span class="text-${accountData.profit >= 0 ? 'green' : 'red'}-400" id="tradeProfit">$${accountData.profit.toLocaleString()}</span>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="border-t border-cyan-500/10 pt-3 mt-3">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-400">Balance</span>
-                                    <span class="text-white">$${accountData.balance.toLocaleString()}</span>
-                                </div>
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-400">Equity</span>
-                                    <span class="text-green-400">$${accountData.equity.toLocaleString()}</span>
-                                </div>
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-400">Profit</span>
-                                    <span class="text-${accountData.profit >= 0 ? 'green' : 'red'}-400">$${accountData.profit.toLocaleString()}</span>
+
+                            <div class="mt-3 md:mt-4">
+                                <h4 class="text-white font-bold text-xs md:text-sm mb-2">📋 Open Positions</h4>
+                                <div id="openPositions">
+                                    ${accountData.positions.length === 0 ? 
+                                        '<div class="text-gray-500 text-xs md:text-sm py-2">No open positions</div>' :
+                                        accountData.positions.map(p => `
+                                            <div class="position-row">
+                                                <span class="${p.type === 'buy' ? 'text-green-400' : 'text-red-400'}">${p.type.toUpperCase()}</span>
+                                                <span>$${p.amount}</span>
+                                                <span>${p.entry}</span>
+                                                <span class="${p.profit >= 0 ? 'text-green-400' : 'text-red-400'}">$${p.profit.toFixed(2)}</span>
+                                                <button onclick="closePosition('${p.id}')" class="text-red-400 hover:text-red-300 text-xs">Close</button>
+                                            </div>
+                                        `).join('')
+                                    }
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="mt-4">
-                            <h4 class="text-white font-bold text-sm mb-2">📋 Open Positions</h4>
-                            <div id="openPositions">
-                                <div class="text-gray-500 text-sm py-2">No open positions</div>
-                            </div>
+                    <!-- Account Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mt-4 md:mt-6">
+                        <div class="stat-card">
+                            <div class="stat-label">Win Rate</div>
+                            <div id="winRate" class="stat-value text-green-400">${accountData.totalTrades > 0 ? Math.round((accountData.winningTrades / accountData.totalTrades) * 100) : 0}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Trades</div>
+                            <div class="stat-value text-white">${accountData.totalTrades}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Payouts</div>
+                            <div class="stat-value text-cyan-400">$${accountData.totalPayouts.toLocaleString()}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Drawdown</div>
+                            <div class="stat-value text-${accountData.drawdown > 5 ? 'red' : 'cyan'}-400">${accountData.drawdown}%</div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Account Stats -->
-                <div class="grid grid-cols-4 gap-4 mt-6">
-                    <div class="stat-card">
-                        <div class="stat-label">Win Rate</div>
-                        <div id="winRate" class="stat-value text-green-400">0%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Trades</div>
-                        <div class="stat-value text-white">${accountData.totalTrades}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Payouts</div>
-                        <div class="stat-value text-cyan-400">$${accountData.totalPayouts.toLocaleString()}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Drawdown</div>
-                        <div class="stat-value text-${accountData.drawdown > 5 ? 'red' : 'cyan'}-400">${accountData.drawdown}%</div>
-                    </div>
-                </div>
-            `;
+                `;
         }
 
         function initChart() {
             const container = document.getElementById('chart-container');
             if (!container) return;
-            
+
+            if (chart) {
+                chart.remove();
+                chart = null;
+                candlestickSeries = null;
+            }
+
+            const isMobile = window.innerWidth < 768;
+            const chartHeight = isMobile ? 200 : 350;
+
             chart = LightweightCharts.createChart(container, {
                 width: container.clientWidth || 600,
-                height: 400,
+                height: chartHeight,
                 layout: {
                     background: { color: '#0b1120' },
                     textColor: '#6b7280',
@@ -730,7 +1081,7 @@
                 timeScale: {
                     borderColor: '#1a2332',
                     timeVisible: true,
-                    secondsVisible: true,
+                    secondsVisible: false,
                 },
             });
 
@@ -742,20 +1093,25 @@
                 wickDownColor: '#ef4444',
             });
 
-            candlestickSeries.setData(chartData);
-            chart.timeScale().fitContent();
-            
-            // Handle resize
-            window.addEventListener('resize', () => {
+            if (chartData.length > 0) {
+                candlestickSeries.setData(chartData);
+                chart.timeScale().fitContent();
+                chart.timeScale().scrollToRealTime();
+            }
+
+            const resizeHandler = () => {
                 if (chart) {
-                    chart.resize(container.clientWidth, 400);
+                    const newHeight = window.innerWidth < 768 ? 200 : 350;
+                    chart.resize(container.clientWidth, newHeight);
                 }
-            });
+            };
+            window.removeEventListener('resize', resizeHandler);
+            window.addEventListener('resize', resizeHandler);
         }
 
         async function renderDashboard() {
             if (!currentUser) {
-                return `<div class="glass p-8 rounded-2xl text-center text-gray-300">Please <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 underline">login</a></div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-gray-300 text-sm md:text-base">Please <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 underline">login</a></div>`;
             }
 
             try {
@@ -767,100 +1123,95 @@
                     accountData.profit = balance.profit || 0;
                     accountData.peakEquity = Math.max(accountData.peakEquity, accountData.equity);
                 }
-                
-                const achievements = await apiCall('/achievements');
 
-                if (!tradingInterval) {
-                    tradingInterval = setInterval(() => {
-                        updateTradingAccount();
-                    }, 5000);
-                }
+                const achievements = await apiCall('/achievements');
 
                 const profitTarget = accountData.balance * 0.08;
                 const progress = Math.min((accountData.profit / profitTarget) * 100, 100);
-                const winRate = accountData.totalTrades > 0 ? Math.round((accountData.winningTrades / accountData.totalTrades) * 100) : 0;
+                const winRate = accountData.totalTrades > 0 ? Math.round((accountData.winningTrades / accountData
+                    .totalTrades) * 100) : 0;
 
                 return `
-                    <div class="grid md:grid-cols-4 gap-4">
-                        <div class="glass p-4 rounded-xl">
-                            <span class="text-gray-400 text-sm">💰 Balance</span>
-                            <h3 id="dashboardBalance" class="text-2xl font-bold text-white number-update">$${accountData.balance.toLocaleString()}</h3>
-                        </div>
-                        <div class="glass p-4 rounded-xl">
-                            <span class="text-gray-400 text-sm">📈 Equity</span>
-                            <h3 id="dashboardEquity" class="text-2xl font-bold text-green-400 number-update">$${accountData.equity.toLocaleString()}</h3>
-                        </div>
-                        <div class="glass p-4 rounded-xl">
-                            <span class="text-gray-400 text-sm">📉 Drawdown</span>
-                            <h3 id="dashboardDrawdown" class="text-2xl font-bold text-${accountData.drawdown > 5 ? 'red' : 'cyan'}-400 number-update">${accountData.drawdown}%</h3>
-                        </div>
-                        <div class="glass p-4 rounded-xl">
-                            <span class="text-gray-400 text-sm">📊 Profit</span>
-                            <h3 id="dashboardProfit" class="text-2xl font-bold text-${accountData.profit >= 0 ? 'green' : 'red'}-400 number-update">$${accountData.profit.toLocaleString()}</h3>
-                        </div>
-                    </div>
-
-                    <div class="glass p-4 rounded-xl mt-4">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-400">🎯 Profit Target (8%)</span>
-                            <span class="text-cyan-400">${Math.round(progress)}%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div id="profitTargetProgress" class="progress-bar-fill bg-cyan-400" style="width: ${Math.min(progress, 100)}%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-gray-500 mt-1">
-                            <span>$${accountData.profit.toLocaleString()}</span>
-                            <span>$${profitTarget.toLocaleString()}</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 mt-4">
-                        <div class="stat-card">
-                            <div class="stat-label">Win Rate</div>
-                            <div id="winRate" class="stat-value text-green-400">${winRate}%</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Total Trades</div>
-                            <div class="stat-value text-white">${accountData.totalTrades}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Total Payouts</div>
-                            <div class="stat-value text-cyan-400">$${accountData.totalPayouts.toLocaleString()}</div>
-                        </div>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-6 mt-6">
-                        <div class="glass p-5 rounded-xl">
-                            <h4 class="text-white font-bold">🏆 Achievements</h4>
-                            <ul class="text-gray-300 mt-2">
-                                ${achievements.length ? achievements.map(a => `<li class="border-b border-cyan-500/10 py-1"><i class="fas fa-check-circle text-cyan-400 mr-2"></i>${a.name}</li>`).join('') : '<li class="text-gray-500">No achievements yet</li>'}
-                            </ul>
-                        </div>
-                        <div class="glass p-5 rounded-xl">
-                            <h4 class="text-white font-bold">📈 Equity Chart</h4>
-                            <div class="h-24 flex items-end space-x-1 mt-2">
-                                <div class="bg-cyan-400 w-6 h-16 rounded-t"></div>
-                                <div class="bg-cyan-400 w-6 h-20 rounded-t"></div>
-                                <div class="bg-cyan-400 w-6 h-12 rounded-t"></div>
-                                <div class="bg-cyan-400 w-6 h-24 rounded-t"></div>
-                                <div class="bg-cyan-400 w-6 h-18 rounded-t"></div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                            <div class="glass p-3 md:p-4 rounded-xl">
+                                <span class="text-gray-400 text-xs md:text-sm">💰 Balance</span>
+                                <h3 id="dashboardBalance" class="text-lg md:text-2xl font-bold text-white number-update">$${accountData.balance.toLocaleString()}</h3>
                             </div>
-                            <div class="text-xs text-gray-500 mt-2 text-center">Live Equity Movement</div>
+                            <div class="glass p-3 md:p-4 rounded-xl">
+                                <span class="text-gray-400 text-xs md:text-sm">📈 Equity</span>
+                                <h3 id="dashboardEquity" class="text-lg md:text-2xl font-bold text-green-400 number-update">$${accountData.equity.toLocaleString()}</h3>
+                            </div>
+                            <div class="glass p-3 md:p-4 rounded-xl">
+                                <span class="text-gray-400 text-xs md:text-sm">📉 Drawdown</span>
+                                <h3 id="dashboardDrawdown" class="text-lg md:text-2xl font-bold text-${accountData.drawdown > 5 ? 'red' : 'cyan'}-400 number-update">${accountData.drawdown}%</h3>
+                            </div>
+                            <div class="glass p-3 md:p-4 rounded-xl">
+                                <span class="text-gray-400 text-xs md:text-sm">📊 Profit</span>
+                                <h3 id="dashboardProfit" class="text-lg md:text-2xl font-bold text-${accountData.profit >= 0 ? 'green' : 'red'}-400 number-update">$${accountData.profit.toLocaleString()}</h3>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mt-6 glass p-4 rounded-xl">
-                        <h4 class="text-white font-bold text-sm">📊 Trading Status</h4>
-                        <div class="flex items-center space-x-2 mt-2">
-                            <span class="pulse-dot text-green-400">●</span>
-                            <span class="text-gray-400 text-sm">Live Trading Active</span>
-                            <span class="text-gray-500 text-xs ml-4">Auto-payout at 8% profit</span>
-                            <a href="javascript:void(0)" onclick="navigate('trading')" class="ml-auto text-cyan-400 text-sm hover:text-cyan-300">Trade Now →</a>
+                        <div class="glass p-3 md:p-4 rounded-xl mt-3 md:mt-4">
+                            <div class="flex justify-between text-xs md:text-sm">
+                                <span class="text-gray-400">🎯 Profit Target (8%)</span>
+                                <span class="text-cyan-400">${Math.round(progress)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="profitTargetProgress" class="progress-bar-fill bg-cyan-400" style="width: ${Math.min(progress, 100)}%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>$${accountData.profit.toLocaleString()}</span>
+                                <span>$${profitTarget.toLocaleString()}</span>
+                            </div>
                         </div>
-                    </div>
-                `;
+
+                        <div class="grid grid-cols-3 gap-2 md:gap-4 mt-3 md:mt-4">
+                            <div class="stat-card">
+                                <div class="stat-label">Win Rate</div>
+                                <div id="winRate" class="stat-value text-green-400">${winRate}%</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total Trades</div>
+                                <div class="stat-value text-white">${accountData.totalTrades}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total Payouts</div>
+                                <div class="stat-value text-cyan-400">$${accountData.totalPayouts.toLocaleString()}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
+                            <div class="glass p-4 md:p-5 rounded-xl">
+                                <h4 class="text-white font-bold text-sm md:text-base">🏆 Achievements</h4>
+                                <ul class="text-gray-300 text-xs md:text-sm mt-2">
+                                    ${achievements.length ? achievements.map(a => `<li class="border-b border-cyan-500/10 py-1"><i class="fas fa-check-circle text-cyan-400 mr-2"></i>${a.name}</li>`).join('') : '<li class="text-gray-500">No achievements yet</li>'}
+                                </ul>
+                            </div>
+                            <div class="glass p-4 md:p-5 rounded-xl">
+                                <h4 class="text-white font-bold text-sm md:text-base">📈 Equity Chart</h4>
+                                <div class="h-16 md:h-24 flex items-end space-x-1 mt-2">
+                                    <div class="bg-cyan-400 w-4 md:w-6 h-10 md:h-16 rounded-t"></div>
+                                    <div class="bg-cyan-400 w-4 md:w-6 h-14 md:h-20 rounded-t"></div>
+                                    <div class="bg-cyan-400 w-4 md:w-6 h-8 md:h-12 rounded-t"></div>
+                                    <div class="bg-cyan-400 w-4 md:w-6 h-18 md:h-24 rounded-t"></div>
+                                    <div class="bg-cyan-400 w-4 md:w-6 h-12 md:h-18 rounded-t"></div>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-2 text-center">Live Equity Movement</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 md:mt-6 glass p-3 md:p-4 rounded-xl">
+                            <h4 class="text-white font-bold text-xs md:text-sm">📊 Trading Status</h4>
+                            <div class="flex flex-wrap items-center space-x-2 mt-2 gap-2">
+                                <span class="pulse-dot text-green-400">●</span>
+                                <span class="text-gray-400 text-xs md:text-sm">Live Trading Active</span>
+                                <span class="text-gray-500 text-xs ml-0 md:ml-4">Auto-payout at 8%</span>
+                                <a href="javascript:void(0)" onclick="navigate('trading')" class="ml-auto text-cyan-400 text-xs md:text-sm hover:text-cyan-300">Trade Now →</a>
+                            </div>
+                        </div>
+                    `;
             } catch (error) {
-                return `<div class="glass p-8 rounded-2xl text-center text-red-400">Error loading dashboard: ${error.message}</div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-red-400 text-sm md:text-base">Error loading dashboard: ${error.message}</div>`;
             }
         }
 
@@ -868,172 +1219,251 @@
             try {
                 const leaderboard = await apiCall('/leaderboard');
                 return `
-                    <div class="glass p-6 rounded-xl">
-                        <h3 class="text-white font-bold text-xl">🏅 Global Leaderboard</h3>
-                        <div class="text-xs text-gray-500 mb-4">Live rankings based on total profit</div>
-                        ${leaderboard.length ? leaderboard.map((l, i) => `
-                            <div class="flex justify-between border-b border-cyan-500/10 py-2 text-gray-300">
-                                <span>#${i + 1} ${l.username}</span>
-                                <span class="text-${l.profit >= 0 ? 'green' : 'red'}-400">$${l.profit.toLocaleString()}</span>
+                        <div class="glass p-4 md:p-6 rounded-xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-white font-bold text-lg md:text-xl">🏅 Global Leaderboard</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-400 text-xs">🔥 Live Competition</span>
+                                    <span class="pulse-dot text-green-400">●</span>
+                                </div>
                             </div>
-                        `).join('') : '<p class="text-gray-500 mt-4">No traders yet</p>'}
-                    </div>
-                `;
+                            <p class="text-gray-400 text-xs mb-4">💰 Top traders compete for the highest profit! Rankings update daily.</p>
+                            
+                            ${leaderboard && leaderboard.length ? leaderboard.map((l, i) => {
+                                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+                                const profitColor = l.profit >= 0 ? 'text-green-400' : 'text-red-400';
+                                const isFake = l.userId && l.userId.startsWith('fake_');
+                                const isYou = l.userId === currentUser?.id;
+                                const userDisplay = isYou ? `${l.username} (You)` : l.username;
+                                const statusIcon = isFake ? '🟢' : isYou ? '🔵' : '🟣';
+                                
+                                return `
+                                    <div class="flex justify-between items-center border-b border-cyan-500/10 py-2 text-gray-300 text-xs md:text-sm hover:bg-cyan-500/5 transition px-2 rounded">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-gray-500 w-6 text-center">${medal}</span>
+                                            <span class="${isYou ? 'text-cyan-400 font-bold' : ''}">${userDisplay}</span>
+                                            <span class="text-gray-500 text-[10px]">${statusIcon}</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <span class="${profitColor} font-bold">$${l.profit.toLocaleString()}</span>
+                                            ${!isYou && !isFake ? `<button onclick="fundUser('${l.userId}')" class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded hover:bg-green-500/30 transition">💲Fund</button>` : ''}
+                                            ${l.profit > 20000 ? '<span class="text-xs text-yellow-400">🔥</span>' : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('') : '<p class="text-gray-500 mt-4 text-sm text-center">No traders yet</p>'}
+                            
+                            <div class="mt-4 text-center text-gray-500 text-xs">
+                                🟢 Active Trader | 🔵 You | 🔵 Real User | 💲 Fund others to help them climb!
+                            </div>
+                        </div>
+                    `;
             } catch (error) {
-                return `<div class="glass p-8 rounded-2xl text-center text-red-400">Error loading leaderboard</div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-red-400 text-sm md:text-base">Error loading leaderboard</div>`;
+            }
+        }
+
+        // ============ FUND USER FUNCTION ============
+        async function fundUser(userId) {
+            if (!currentUser) {
+                alert('Please login first');
+                return;
+            }
+
+            const amount = prompt('Enter amount to fund (max $10,000):');
+            if (!amount) return;
+
+            const numAmount = parseFloat(amount);
+            if (isNaN(numAmount) || numAmount <= 0 || numAmount > 10000) {
+                alert('Please enter a valid amount between $1 and $10,000');
+                return;
+            }
+
+            try {
+                const result = await apiCall('/fund', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        userId: userId,
+                        amount: numAmount,
+                        fromUser: currentUser.username
+                    })
+                });
+
+                if (result.success) {
+                    showNotification(`💲 You funded ${result.username} with $${numAmount.toLocaleString()}!`);
+                    navigate('leaderboard');
+                } else {
+                    alert(result.message || 'Funding failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
             }
         }
 
         async function renderChallenges() {
             if (!currentUser) {
-                return `<div class="glass p-8 rounded-2xl text-center text-gray-300">Please <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 underline">login</a> to start challenges</div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-gray-300 text-sm md:text-base">Please <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 underline">login</a> to start challenges</div>`;
             }
             return `
-                <div class="glass p-6 rounded-xl">
-                    <h3 class="text-white font-bold text-xl">📊 Challenges</h3>
-                    <p class="text-gray-400 text-sm mt-1">Choose your challenge level. Target: 8% profit for auto-payout!</p>
-                    <div class="grid md:grid-cols-4 gap-4 mt-4">
-                        ${['10000','25000','50000','100000'].map(c => `
-                            <div class="glass p-6 rounded-xl text-center card-hover">
-                                <h3 class="text-2xl font-bold text-cyan-400">$${parseInt(c).toLocaleString()}</h3>
-                                <p class="text-gray-400 text-sm">Profit target 8%</p>
-                                <p class="text-gray-500 text-xs mt-1">Payout at $${(parseInt(c) * 0.08).toLocaleString()}</p>
-                                <button onclick="startChallenge('${c}')" class="mt-4 bg-cyan-600/30 text-cyan-300 px-4 py-2 rounded-lg border border-cyan-500/40 hover:bg-cyan-600/50 transition">
-                                    Start Challenge
-                                </button>
-                            </div>
-                        `).join('')}
+                    <div class="glass p-4 md:p-6 rounded-xl">
+                        <h3 class="text-white font-bold text-lg md:text-xl">📊 Challenges</h3>
+                        <p class="text-gray-400 text-xs md:text-sm mt-1">Choose your challenge level. Target: 8% profit for auto-payout!</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mt-3 md:mt-4">
+                            ${['10000','25000','50000','100000'].map(c => `
+                                <div class="glass p-3 md:p-6 rounded-xl text-center card-hover">
+                                    <h3 class="text-lg md:text-2xl font-bold text-cyan-400">$${parseInt(c).toLocaleString()}</h3>
+                                    <p class="text-gray-400 text-xs md:text-sm">Target 8%</p>
+                                    <p class="text-gray-500 text-xs mt-1">Payout $${(parseInt(c) * 0.08).toLocaleString()}</p>
+                                    <button onclick="startChallenge('${c}')" class="mt-2 md:mt-4 bg-cyan-600/30 text-cyan-300 px-3 md:px-4 py-1 md:py-2 rounded-lg border border-cyan-500/40 hover:bg-cyan-600/50 transition text-xs md:text-sm">
+                                        Start
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
         }
 
         async function renderPayouts() {
-            if (!currentUser) return `<div class="glass p-8 rounded-2xl text-center text-gray-300">Please login</div>`;
+            if (!currentUser) return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-gray-300 text-sm md:text-base">Please login</div>`;
             try {
                 const payouts = await apiCall('/payouts');
                 return `
-                    <div class="glass p-6 rounded-xl">
-                        <h3 class="text-white font-bold text-xl">💰 Payout History</h3>
-                        <p class="text-gray-400 text-sm mt-1">Auto-payouts are processed when you reach 8% profit!</p>
-                        ${payouts.length ? payouts.map(p => `
-                            <div class="flex justify-between border-b border-cyan-500/10 py-2 text-gray-300">
-                                <span>$${p.amount.toLocaleString()}</span>
-                                <span>${p.date}</span>
-                                <span class="text-${p.status === 'Completed' ? 'green' : 'yellow'}-400">${p.status}</span>
+                        <div class="glass p-4 md:p-6 rounded-xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-white font-bold text-lg md:text-xl">💰 Payout History</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-400 text-xs">Total: </span>
+                                    <span class="text-cyan-400 font-bold text-sm">$${accountData.totalPayouts.toLocaleString()}</span>
+                                </div>
                             </div>
-                        `).join('') : '<p class="text-gray-500 mt-4">No payouts yet. Start a challenge and reach 8% profit!</p>'}
-                    </div>
-                `;
+                            <p class="text-gray-400 text-xs md:text-sm mb-4">Auto-payouts are processed when you reach 8% profit!</p>
+                            ${payouts && payouts.length ? payouts.map(p => `
+                                <div class="payout-item">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="bg-${p.status === 'Completed' ? 'green' : 'yellow'}-500/10 p-2 rounded-full">
+                                            <i class="fas fa-${p.status === 'Completed' ? 'check-circle' : 'clock'} text-${p.status === 'Completed' ? 'green' : 'yellow'}-400"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-bold text-sm">$${p.amount.toLocaleString()}</p>
+                                            <p class="text-gray-500 text-xs">${p.date || 'N/A'}</p>
+                                            ${p.transactionId ? `<p class="text-gray-500 text-xs">TX: ${p.transactionId}</p>` : ''}
+                                        </div>
+                                    </div>
+                                    <span class="payout-badge ${p.status ? p.status.toLowerCase() : 'pending'}">${p.status || 'Pending'}</span>
+                                </div>
+                            `).join('') : '<p class="text-gray-500 text-sm text-center py-8">No payouts yet. Start a challenge and reach 8% profit!</p>'}
+                        </div>
+                    `;
             } catch (error) {
-                return `<div class="glass p-8 rounded-2xl text-center text-red-400">Error loading payouts</div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-red-400 text-sm md:text-base">Error loading payouts</div>`;
             }
         }
 
         async function renderJournal() {
-            if (!currentUser) return `<div class="glass p-8 rounded-2xl text-center text-gray-300">Please login</div>`;
+            if (!currentUser) return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-gray-300 text-sm md:text-base">Please login</div>`;
             try {
                 const journal = await apiCall('/journal');
                 return `
-                    <div class="glass p-6 rounded-xl">
-                        <h3 class="text-white font-bold text-xl">📓 Trading Journal</h3>
-                        ${journal.length ? journal.map(j => `
-                            <div class="border-b border-cyan-500/10 py-2 text-gray-300">
-                                <span class="text-cyan-400">${j.date}</span> - ${j.entry} 
-                                <span class="text-${j.outcome.includes('+') ? 'green' : 'yellow'}-400">${j.outcome}</span>
-                            </div>
-                        `).join('') : '<p class="text-gray-500 mt-4">No journal entries</p>'}
-                        <button onclick="addJournalEntry()" class="mt-4 bg-cyan-600/20 text-cyan-300 px-4 py-2 rounded-lg border border-cyan-500/30">
-                            + Add Entry
-                        </button>
-                    </div>
-                `;
+                        <div class="glass p-4 md:p-6 rounded-xl">
+                            <h3 class="text-white font-bold text-lg md:text-xl">📓 Trading Journal</h3>
+                            ${journal.length ? journal.map(j => `
+                                <div class="border-b border-cyan-500/10 py-2 text-gray-300 text-xs md:text-sm">
+                                    <span class="text-cyan-400">${j.date}</span> - ${j.entry} 
+                                    <span class="text-${j.outcome.includes('+') ? 'green' : 'yellow'}-400">${j.outcome}</span>
+                                </div>
+                            `).join('') : '<p class="text-gray-500 mt-4 text-sm">No journal entries</p>'}
+                            <button onclick="addJournalEntry()" class="mt-3 md:mt-4 bg-cyan-600/20 text-cyan-300 px-3 md:px-4 py-1 md:py-2 rounded-lg border border-cyan-500/30 text-xs md:text-sm">
+                                + Add Entry
+                            </button>
+                        </div>
+                    `;
             } catch (error) {
-                return `<div class="glass p-8 rounded-2xl text-center text-red-400">Error loading journal</div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-red-400 text-sm md:text-base">Error loading journal</div>`;
             }
         }
 
         async function renderCertificates() {
-            if (!currentUser) return `<div class="glass p-8 rounded-2xl text-center text-gray-300">Please login</div>`;
+            if (!currentUser) return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-gray-300 text-sm md:text-base">Please login</div>`;
             try {
                 const certs = await apiCall('/certificates');
                 return `
-                    <div class="glass p-6 rounded-xl">
-                        <h3 class="text-white font-bold text-xl">📜 Certificates</h3>
-                        <p class="text-gray-400 text-sm mt-1">Earn certificates by completing challenges!</p>
-                        ${certs.length ? certs.map(c => `
-                            <div class="border-b border-cyan-500/10 py-2 text-gray-300">
-                                <i class="fas fa-certificate text-cyan-400 mr-2"></i>${c.name}
-                            </div>
-                        `).join('') : '<p class="text-gray-500 mt-4">No certificates yet. Complete a challenge to earn one!</p>'}
-                    </div>
-                `;
+                        <div class="glass p-4 md:p-6 rounded-xl">
+                            <h3 class="text-white font-bold text-lg md:text-xl">📜 Certificates</h3>
+                            <p class="text-gray-400 text-xs md:text-sm mt-1">Earn certificates by completing challenges!</p>
+                            ${certs.length ? certs.map(c => `
+                                <div class="border-b border-cyan-500/10 py-2 text-gray-300 text-xs md:text-sm">
+                                    <i class="fas fa-certificate text-cyan-400 mr-2"></i>${c.name}
+                                </div>
+                            `).join('') : '<p class="text-gray-500 mt-4 text-sm">No certificates yet. Complete a challenge to earn one!</p>'}
+                        </div>
+                    `;
             } catch (error) {
-                return `<div class="glass p-8 rounded-2xl text-center text-red-400">Error loading certificates</div>`;
+                return `<div class="glass p-6 md:p-8 rounded-2xl text-center text-red-400 text-sm md:text-base">Error loading certificates</div>`;
             }
         }
 
         function renderContact() {
             return `
-                <div class="glass p-6 rounded-xl max-w-xl mx-auto">
-                    <h3 class="text-white font-bold text-xl">📞 Contact</h3>
-                    <div class="text-gray-300 mt-4 space-y-2">
-                        <p><i class="fas fa-phone text-cyan-400 w-6"></i> 0741 748 180</p>
-                        <p><i class="fas fa-map-pin text-cyan-400 w-6"></i> Nairobi, Kenya</p>
-                        <p><i class="fas fa-envelope text-cyan-400 w-6"></i> support@synth-edge.com</p>
+                    <div class="glass p-4 md:p-6 rounded-xl max-w-xl mx-auto">
+                        <h3 class="text-white font-bold text-lg md:text-xl">📞 Contact</h3>
+                        <div class="text-gray-300 mt-3 md:mt-4 space-y-2 text-sm md:text-base">
+                            <p><i class="fas fa-phone text-cyan-400 w-6"></i> 0741 748 180</p>
+                            <p><i class="fas fa-map-pin text-cyan-400 w-6"></i> Nairobi, Kenya</p>
+                            <p><i class="fas fa-envelope text-cyan-400 w-6"></i> support@synth-edge.com</p>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
         }
 
         function renderLogin() {
             const savedUsername = localStorage.getItem('savedUsername') || '';
             const rememberMe = localStorage.getItem('rememberMe') === 'true';
             return `
-                <div class="glass p-6 rounded-xl max-w-md mx-auto">
-                    <h3 class="text-white font-bold text-xl">🔐 Login</h3>
-                    <form id="loginForm" class="mt-4 space-y-4">
-                        <div>
-                            <input type="text" id="loginUser" placeholder="Username" value="${savedUsername}">
-                        </div>
-                        <div class="password-wrapper">
-                            <input type="password" id="loginPass" placeholder="Password">
-                            <button type="button" class="password-toggle" onclick="togglePassword()">
-                                <i class="fas fa-eye" id="passwordIcon"></i>
-                            </button>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" id="rememberMe" class="custom-checkbox" ${rememberMe ? 'checked' : ''}>
-                                <label for="rememberMe" class="text-gray-300 text-sm">Remember Me</label>
+                    <div class="glass p-4 md:p-6 rounded-xl max-w-md mx-auto">
+                        <h3 class="text-white font-bold text-lg md:text-xl">🔐 Login</h3>
+                        <form id="loginForm" class="mt-3 md:mt-4 space-y-3 md:space-y-4">
+                            <div>
+                                <input type="text" id="loginUser" placeholder="Username" value="${savedUsername}" class="text-sm md:text-base">
                             </div>
-                            <a href="javascript:void(0)" class="text-cyan-400 text-sm hover:text-cyan-300">Forgot Password?</a>
-                        </div>
-                        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-lg font-medium transition">Login</button>
-                    </form>
-                    <p class="text-gray-400 text-sm mt-4 text-center">Don't have an account? <a href="javascript:void(0)" onclick="navigate('register')" class="text-cyan-400 hover:text-cyan-300">Register</a></p>
-                </div>
-            `;
+                            <div class="password-wrapper">
+                                <input type="password" id="loginPass" placeholder="Password" class="text-sm md:text-base">
+                                <button type="button" class="password-toggle" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="passwordIcon"></i>
+                                </button>
+                            </div>
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="rememberMe" class="custom-checkbox" ${rememberMe ? 'checked' : ''}>
+                                    <label for="rememberMe" class="text-gray-300 text-xs md:text-sm">Remember Me</label>
+                                </div>
+                                <a href="javascript:void(0)" class="text-cyan-400 text-xs md:text-sm hover:text-cyan-300">Forgot Password?</a>
+                            </div>
+                            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-2 md:py-3 rounded-lg font-medium transition text-sm md:text-base">Login</button>
+                        </form>
+                        <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-4 text-center">Don't have an account? <a href="javascript:void(0)" onclick="navigate('register')" class="text-cyan-400 hover:text-cyan-300">Register</a></p>
+                    </div>
+                `;
         }
 
         function renderRegister() {
             return `
-                <div class="glass p-6 rounded-xl max-w-md mx-auto">
-                    <h3 class="text-white font-bold text-xl">📝 Register</h3>
-                    <form id="registerForm" class="mt-4 space-y-4">
-                        <input type="text" id="regUser" placeholder="Username">
-                        <input type="email" id="regEmail" placeholder="Email">
-                        <div class="password-wrapper">
-                            <input type="password" id="regPass" placeholder="Password">
-                            <button type="button" class="password-toggle" onclick="toggleRegisterPassword()">
-                                <i class="fas fa-eye" id="registerPasswordIcon"></i>
-                            </button>
-                        </div>
-                        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-lg font-medium transition">Register</button>
-                    </form>
-                    <p class="text-gray-400 text-sm mt-4 text-center">Already have an account? <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 hover:text-cyan-300">Login</a></p>
-                </div>
-            `;
+                    <div class="glass p-4 md:p-6 rounded-xl max-w-md mx-auto">
+                        <h3 class="text-white font-bold text-lg md:text-xl">📝 Register</h3>
+                        <form id="registerForm" class="mt-3 md:mt-4 space-y-3 md:space-y-4">
+                            <input type="text" id="regUser" placeholder="Username" class="text-sm md:text-base">
+                            <input type="email" id="regEmail" placeholder="Email" class="text-sm md:text-base">
+                            <div class="password-wrapper">
+                                <input type="password" id="regPass" placeholder="Password" class="text-sm md:text-base">
+                                <button type="button" class="password-toggle" onclick="toggleRegisterPassword()">
+                                    <i class="fas fa-eye" id="registerPasswordIcon"></i>
+                                </button>
+                            </div>
+                            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-2 md:py-3 rounded-lg font-medium transition text-sm md:text-base">Register</button>
+                        </form>
+                        <p class="text-gray-400 text-xs md:text-sm mt-3 md:mt-4 text-center">Already have an account? <a href="javascript:void(0)" onclick="navigate('login')" class="text-cyan-400 hover:text-cyan-300">Login</a></p>
+                    </div>
+                `;
         }
 
         // ============ PASSWORD TOGGLE ============
@@ -1071,29 +1501,46 @@
                 tradingInterval = null;
             }
 
-            switch(page) {
-                case 'home': content.innerHTML = await renderHome(); break;
-                case 'dashboard': content.innerHTML = await renderDashboard(); break;
-                case 'trading': content.innerHTML = await renderTrading(); break;
-                case 'challenges': content.innerHTML = await renderChallenges(); break;
-                case 'payouts': content.innerHTML = await renderPayouts(); break;
-                case 'leaderboard': content.innerHTML = await renderLeaderboard(); break;
-                case 'journal': content.innerHTML = await renderJournal(); break;
-                case 'certificates': content.innerHTML = await renderCertificates(); break;
-                case 'contact': content.innerHTML = renderContact(); break;
-                case 'login': content.innerHTML = renderLogin(); break;
-                case 'register': content.innerHTML = renderRegister(); break;
-                default: content.innerHTML = await renderHome();
+            switch (page) {
+                case 'home':
+                    content.innerHTML = await renderHome();
+                    break;
+                case 'dashboard':
+                    content.innerHTML = await renderDashboard();
+                    break;
+                case 'trading':
+                    content.innerHTML = await renderTrading();
+                    break;
+                case 'challenges':
+                    content.innerHTML = await renderChallenges();
+                    break;
+                case 'payouts':
+                    content.innerHTML = await renderPayouts();
+                    break;
+                case 'leaderboard':
+                    content.innerHTML = await renderLeaderboard();
+                    break;
+                case 'journal':
+                    content.innerHTML = await renderJournal();
+                    break;
+                case 'certificates':
+                    content.innerHTML = await renderCertificates();
+                    break;
+                case 'contact':
+                    content.innerHTML = renderContact();
+                    break;
+                case 'login':
+                    content.innerHTML = renderLogin();
+                    break;
+                case 'register':
+                    content.innerHTML = renderRegister();
+                    break;
+                default:
+                    content.innerHTML = await renderHome();
             }
-            
+
             attachFormListeners();
             updateHomeMarket();
-
-            if (page === 'trading') {
-                setTimeout(() => {
-                    initChart();
-                }, 200);
-            }
         }
 
         function updateHomeMarket() {
@@ -1110,10 +1557,10 @@
                     const color = direction === 'up' ? 'text-green-400' : 'text-red-400';
                     const icon = direction === 'up' ? 'fa-arrow-up' : 'fa-arrow-down';
                     item.innerHTML = `
-                        <span class="${color}">${pair}</span>
-                        ${data.price.toLocaleString()} 
-                        <i class="fas ${icon} ${color}"></i>
-                    `;
+                            <span class="${color}">${pair}</span>
+                            ${data.price.toLocaleString()} 
+                            <i class="fas ${icon} ${color}"></i>
+                        `;
                 }
             });
         }
@@ -1136,12 +1583,12 @@
             const username = document.getElementById('loginUser').value;
             const password = document.getElementById('loginPass').value;
             const rememberMe = document.getElementById('rememberMe').checked;
-            
+
             if (!username || !password) {
                 alert('Please fill in all fields');
                 return;
             }
-            
+
             if (rememberMe) {
                 localStorage.setItem('savedUsername', username);
                 localStorage.setItem('rememberMe', 'true');
@@ -1149,7 +1596,7 @@
                 localStorage.removeItem('savedUsername');
                 localStorage.setItem('rememberMe', 'false');
             }
-            
+
             await loginUser(username, password);
         }
 
@@ -1158,7 +1605,7 @@
             const username = document.getElementById('regUser').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPass').value;
-            
+
             if (!username || !email || !password) {
                 alert('Please fill in all fields');
                 return;
@@ -1221,18 +1668,18 @@
         window.toggleRegisterPassword = toggleRegisterPassword;
         window.placeTrade = placeTrade;
         window.closePosition = closePosition;
+        window.fundUser = fundUser;
 
         // ============ INIT ============
         console.log('SynthEdge Loading...');
         checkAuth();
         navigate('home');
         console.log('SynthEdge Ready!');
-        
+
         renderTicker();
-        
+
         setInterval(() => {
             updateHomeMarket();
-            // Update ticker prices
             const tickerItems = document.querySelectorAll('[data-pair]');
             tickerItems.forEach(el => {
                 const pair = el.getAttribute('data-pair');
@@ -1242,10 +1689,10 @@
                     const color = direction === 'up' ? 'text-green-400' : 'text-red-400';
                     const icon = direction === 'up' ? 'fa-arrow-up' : 'fa-arrow-down';
                     el.innerHTML = `
-                        <span class="${color}">${data.pair}</span>
-                        ${data.price.toLocaleString()} 
-                        <i class="fas ${icon} ${color} ml-1"></i>
-                    `;
+                            <span class="${color}">${data.pair}</span>
+                            ${data.price.toLocaleString()} 
+                            <i class="fas ${icon} ${color} ml-1"></i>
+                        `;
                 }
             });
         }, 3000);
